@@ -74,3 +74,6 @@ def run_script_slr():
     print(result)
     result = result.decode("utf-8")
     return render_template("slr.html", result=result)
+
+if __name__ == ('__main__'):
+    app.run(host='0.0.0.0', port=3001)
