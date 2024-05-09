@@ -1,7 +1,13 @@
 from flask import Flask, render_template, request
 import subprocess
+import os
+import datetime
 
 app = Flask(__name__)
+
+# get path for input_files
+current_path = os.getcwd()
+input_path = os.path.join(current_path, 'input_files')
 
 @app.route("/")
 def start():
@@ -39,14 +45,26 @@ def proxy():
 def slr():
     return render_template("slr.html")
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def run_script_direct():
-    file = request.form.get("direct")
-    print(file)
-    result = subprocess.check_output("python ez_register_direct.py " + "~/"+file, shell=True, stderr=subprocess.STDOUT)
+    #file = request.form.get("direct")  # get filename
+    #print(file)
+    file = request.files.get("direct")  # get file content
+    now = datetime.datetime.now()
+    file_path = os.path.join(input_path, now.strftime('%Y%m%d_%H%M%S_')+file.filename)
+    file.save(file_path)
+
+    #result = subprocess.check_output("python ez_register_direct.py " + "~/"+file, shell=True, stderr=subprocess.STDOUT)
+    result = subprocess.check_output(
+        f"python3 {current_path}/ez_register_direct.py {file_path}", 
+        shell=True,
+        stderr=subprocess.STDOUT
+    )
     print(result)
     result = result.decode("utf-8")
     return render_template("direct.html", result=result)
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def run_script_onprem():

@@ -1,0 +1,6 @@
+/input_files/**
+!/input_files/**/
+!/input_files/**/.gitkeep
+*.swp
+*.log
+
